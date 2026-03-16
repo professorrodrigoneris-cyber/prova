@@ -1,0 +1,117 @@
+ID,Disciplina,Turma,Professor,Eletiva
+1,Inglês,5º Ano,Gildania,Não
+2,Pensamento Computacional,5º Ano,Rodrigo Neris,Não
+3,Educação Física,5º Ano,Herica,Não
+4,Artes,6º Ano A,Gilson Santos,Não
+5,Pensamento Computacional,6º Ano A,Rodrigo Neris,Não
+6,Empreendedorismo,6º Ano A,Rodrigo Neris,Não
+7,Português,6º Ano A,Gildania,Não
+8,Inglês,6º Ano A,Gildania,Não
+9,Ciências,6º Ano A,Laura,Não
+10,Matemática,6º Ano A,Wanderley,Não
+11,História,6º Ano A,Josiane,Não
+12,Filosofia,6º Ano A,Josiane,Não
+13,Educação Física,6º Ano A,Herica,Não
+14,Geografia,6º Ano A,Jordana,Não
+15,Artes,6º Ano B,Gilson Santos,Não
+16,Pensamento Computacional,6º Ano B,Rodrigo Neris,Não
+17,Empreendedorismo,6º Ano B,Rodrigo Neris,Não
+18,Português,6º Ano B,Gildania,Não
+19,Inglês,6º Ano B,Gildania,Não
+20,Ciências,6º Ano B,Laura,Não
+21,Matemática,6º Ano B,Wanderley,Não
+22,História,6º Ano B,Josiane,Não
+23,Filosofia,6º Ano B,Josiane,Não
+24,Educação Física,6º Ano B,Herica,Não
+25,Geografia,6º Ano B,Jordana,Não
+26,Artes,7º Ano,Gilson Santos,Não
+27,Pensamento Computacional,7º Ano,Rodrigo Neris,Não
+28,Empreendedorismo,7º Ano,Rodrigo Neris,Não
+29,Português,7º Ano,Gildania,Não
+30,Inglês,7º Ano,Gildania,Não
+31,Ciências,7º Ano,Laura,Não
+32,Matemática,7º Ano,Wanderley,Não
+33,História,7º Ano,Josiane,Não
+34,Filosofia,7º Ano,Josiane,Não
+35,Educação Física,7º Ano,Herica,Não
+36,Geografia,7º Ano,Jordana,Não
+37,Artes,8º Ano,Gilson Santos,Não
+38,Pensamento Computacional,8º Ano,Rodrigo Neris,Não
+39,Empreendedorismo,8º Ano,Rodrigo Neris,Não
+40,Inglês,8º Ano,Gildania,Não
+41,Ciências,8º Ano,Laura,Não
+42,Matemática,8º Ano,Wanderley,Não
+43,História,8º Ano,Josiane,Não
+44,Filosofia,8º Ano,Josiane,Não
+45,Educação Física,8º Ano,Herica,Não
+46,Português,8º Ano,Jordana,Não
+47,Geografia,8º Ano,Gilson Santos,Não
+48,Artes,9º Ano,Gilson Santos,Não
+49,Geografia,9º Ano,Gilson Santos,Não
+50,Matemática,9º Ano,Rodrigo Neris,Não
+51,Pensamento Computacional,9º Ano,Rodrigo Neris,Não
+52,Empreendedorismo,9º Ano,Rodrigo Neris,Não
+53,Inglês,9º Ano,Gildania,Não
+54,Física,9º Ano,Laura,Não
+55,Química,9º Ano,Laura,Não
+56,Matemática,9º Ano,Wanderley,Não
+57,História,9º Ano,Josiane,Não
+58,Filosofia,9º Ano,Josiane,Não
+59,Educação Física,9º Ano,Herica,Não
+60,Redação,9º Ano,Jordana,Não
+61,Geografia,1º Médio,Gilson Santos,Não
+62,Observatório Geográfico,1º Médio,Gilson Santos,Sim
+63,Projeto de Vida,1º Médio,Gilson Santos,Sim
+64,Núcleo de Análises Historiográficas,1º Médio,Gilson Santos,Sim
+65,Matemática,1º Médio,Rodrigo Neris,Não
+66,Física,1º Médio,Rodrigo Neris,Não
+67,Empreendedorismo,1º Médio,Rodrigo Neris,Não
+68,Português,1º Médio,Janaine,Não
+69,Literatura,1º Médio,Janaine,Não
+70,Inglês,1º Médio,Gildania,Não
+71,Química,1º Médio,Laura,Não
+72,Biologia,1º Médio,Laura,Não
+73,História,1º Médio,Josiane,Não
+74,Filosofia,1º Médio,Josiane,Não
+75,Educação Física,1º Médio,Herica,Não
+76,Criação e Estudos de Artes,1º Médio,Jordana,Sim
+77,Oficina de Literatura,1º Médio,Jordana,Sim
+78,Prática de Argumentação,1º Médio,Jordana,Sim
+79,Geografia,2º Médio,Gilson Santos,Não
+80,Observatório Geográfico,2º Médio,Gilson Santos,Sim
+81,Criação e Estudos de Artes,2º Médio,Gilson Santos,Sim
+82,Núcleo de Análises Historiográficas,2º Médio,Gilson Santos,Sim
+83,Empreendedorismo,2º Médio,Rodrigo Neris,Não
+84,Português,2º Médio,Janaine,Não
+85,Literatura,2º Médio,Janaine,Não
+86,Química,2º Médio,Janaine,Não
+87,Inglês,2º Médio,Gildania,Não
+88,Biologia,2º Médio,Laura,Não
+89,Matemática,2º Médio,Wanderley,Não
+90,Núcleo de Investigação Matemática,2º Médio,Wanderley,Sim
+91,Física,2º Médio,Wanderley,Não
+92,História,2º Médio,Josiane,Não
+93,Filosofia,2º Médio,Josiane,Não
+94,Educação Física,2º Médio,Herica,Não
+95,Oficina de Literatura,2º Médio,Jordana,Sim
+96,Prática de Argumentação,2º Médio,Jordana,Sim
+97,Artes,2º Médio,Jordana,Não
+98,Geografia,3º Médio,Gilson Santos,Não
+99,Estudos Avançados de Geografia,3º Médio,Gilson Santos,Sim
+100,Sociologia,3º Médio,Gilson Santos,Não
+101,Empreendedorismo,3º Médio,Rodrigo Neris,Não
+102,Matemática,3º Médio,Rodrigo Neris,Não
+103,Física,3º Médio,Rodrigo Neris,Não
+104,Português,3º Médio,Janaine,Não
+105,Literatura,3º Médio,Janaine,Não
+106,Química,3º Médio,Janaine,Não
+107,Inglês,3º Médio,Gildania,Não
+108,Biologia,3º Médio,Laura,Não
+109,Projeto de Vida,3º Médio,Laura,Sim
+110,História,3º Médio,Josiane,Não
+111,Filosofia,3º Médio,Josiane,Não
+112,Estudos Avançados História,3º Médio,Josiane,Sim
+113,Educação Física,3º Médio,Herica,Não
+114,Artes,3º Médio,Jordana,Não
+115,Análise e Produção Textual,3º Médio,Jordana,Sim
+116,Núcleo de Investigação Matemática,1º Médio,Rodrigo Neris,Sim

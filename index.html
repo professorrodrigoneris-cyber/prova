@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montador de Provas iOS</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>Escola Alegria</h2>
+        </div>
+        <nav class="menu">
+            <button class="menu-btn active" onclick="switchTab('disciplinas', this)">📚 Disciplinas</button>
+            <button class="menu-btn" onclick="switchTab('selecao', this)">✅ Seleção</button>
+            <button class="menu-btn" onclick="switchTab('montador', this)">📝 Montar Prova</button>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- ================= DISCIPLINAS TAB ================= -->
+        <section id="tab-disciplinas" class="tab-pane active">
+            <header>
+                <h1>Gerenciador de Disciplinas</h1>
+            </header>
+            
+            <div class="card">
+                <h3>Base de Dados de Disciplinas</h3>
+                <div class="actions-row">
+                    <label class="btn btn-secondary">
+                        📥 Importar CSV
+                        <input type="file" id="import-disciplinas" accept=".csv" style="display: none;">
+                    </label>
+                    <button class="btn btn-secondary" onclick="limparTabelaDisciplinas()">🧹 Limpar Tabela</button>
+                    <button class="btn btn-primary" onclick="salvarDisciplinasCSV()">💾 Salvar Disciplinas (CSV)</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="ios-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Disciplina</th>
+                                <th>Turma</th>
+                                <th>Professor</th>
+                                <th>Eletiva</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-disciplinas">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-row mt-20">
+                    <div class="input-group">
+                        <label>ID</label>
+                        <input type="text" id="disc-id" disabled class="disabled">
+                    </div>
+                    <div class="input-group">
+                        <label>Disciplina</label>
+                        <input type="text" id="disc-nome">
+                    </div>
+                    <div class="input-group">
+                        <label>Turma</label>
+                        <input type="text" id="disc-turma">
+                    </div>
+                    <div class="input-group">
+                        <label>Professor</label>
+                        <input type="text" id="disc-prof">
+                    </div>
+                    <div class="input-group">
+                        <label>Eletiva?</label>
+                        <select id="disc-eletiva">
+                            <option>Não</option>
+                            <option>Sim</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="actions-row mt-10">
+                    <button class="btn btn-primary" id="btn-salvar-disc" onclick="adicionarOuSalvarDisciplina()">Adicionar Disciplina</button>
+                    <button class="btn btn-secondary hidden" id="btn-cancel-disc" onclick="cancelarEdicaoDisc()">Cancelar Edição</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SELEÇÃO TAB ================= -->
+        <section id="tab-selecao" class="tab-pane">
+            <header>
+                <h1>Seleção para Provas</h1>
+                <p class="subtitle">Selecione quais disciplinas farão parte do calendário.</p>
+            </header>
+
+            <div class="card">
+                <div class="columns-2">
+                    <!-- Esquerda: Disponíveis -->
+                    <div class="column">
+                        <h3>Disciplinas Disponíveis</h3>
+                        <div class="actions-grid">
+                            <button class="btn btn-secondary btn-sm" onclick="adicionarTodas()">Adicionar Todas</button>
+                            <button class="btn btn-secondary btn-sm" onclick="adicionarFund1()">5º Ano</button>
+                            <button class="btn btn-secondary btn-sm" onclick="adicionarFund2()">6º-9º Ano</button>
+                            <button class="btn btn-secondary btn-sm" onclick="adicionarEnsMed()">Ens. Médio</button>
+                            <button class="btn btn-secondary btn-sm" onclick="adicionarEletivas()">Eletivas</button>
+                        </div>
+                        <div class="table-container list-container mt-10">
+                            <table class="ios-table compact-table">
+                                <thead>
+                                    <tr>
+                                        <th>Disc/Turma/Prof</th>
+                                        <th style="width: 50px;">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-disp"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Direita: Selecionadas -->
+                    <div class="column">
+                        <h3>Disciplinas Selecionadas</h3>
+                        <div class="actions-grid" style="justify-content: flex-end;">
+                            <button class="btn btn-danger btn-sm" onclick="removerTodasSelecao()">Remover Todas</button>
+                        </div>
+                        <div class="table-container list-container mt-10">
+                            <table class="ios-table compact-table">
+                                <thead>
+                                    <tr>
+                                        <th>Disc/Turma/Prof</th>
+                                        <th style="width: 50px;">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-sel"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MONTAR PROVA TAB ================= -->
+        <section id="tab-montador" class="tab-pane">
+            <header>
+                <h1>Montar Prova Manualmente</h1>
+            </header>
+
+            <div class="card">
+                <h3>Período das Provas</h3>
+                <div class="form-row align-center">
+                    <div class="input-group">
+                        <label>Data Início (DD/MM/AAAA)</label>
+                        <input type="text" id="data-inicio" onfocus="this.type='date'" onblur="this.type='text'">
+                    </div>
+                    <div class="input-group">
+                        <label>Data Fim (DD/MM/AAAA)</label>
+                        <input type="text" id="data-fim" onfocus="this.type='date'" onblur="this.type='text'">
+                    </div>
+                    <button class="btn btn-secondary" onclick="atualizarListaDatas()" style="margin-top: 22px;">Atualizar Datas</button>
+                    
+                    <div style="flex:1"></div>
+                    
+                    <label class="btn btn-secondary" style="margin-top: 22px;">
+                        Abrir Lista
+                        <input type="file" id="import-montador" accept=".csv" style="display: none;">
+                    </label>
+                    <button class="btn btn-secondary" style="margin-top: 22px;" onclick="exportarMontadorCSV()">Salvar CSV</button>
+                    <button class="btn btn-primary" style="margin-top: 22px;" onclick="exportarWord()">Exportar Word</button>
+                </div>
+                
+                <h3 class="mt-20">Adicionar Prova</h3>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Data</label>
+                        <select id="mont-data"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Turma</label>
+                        <select id="mont-turma" onchange="atualizarDisciplinasMontador()"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Disciplina</label>
+                        <select id="mont-disc"></select>
+                    </div>
+                </div>
+                <div class="form-row mt-10">
+                    <div class="input-group">
+                        <label>Aplicação</label>
+                        <select id="mont-app">
+                            <option>1ª Aplicação</option>
+                            <option>2ª Aplicação</option>
+                            <option>3ª Aplicação</option>
+                            <option>4ª Aplicação</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="flex: 2;">
+                        <label>Observação (Opcional p/ liberar conflitos)</label>
+                        <input type="text" id="mont-obs" placeholder="Ex: Prova conjunta, substituto, etc">
+                    </div>
+                </div>
+                
+                <div class="actions-row mt-10">
+                    <button class="btn btn-secondary" id="btn-mont-add" onclick="salvarMontador()">Adicionar à Lista</button>
+                    <button class="btn btn-secondary hidden" id="btn-mont-cancel" onclick="cancelarEdicaoMontador()">Cancelar Edição</button>
+                </div>
+            </div>
+
+            <div class="card mt-20">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3>Lista de Provas</h3>
+                    <button class="btn btn-danger btn-sm" onclick="removerProvaSelecionada()">Excluir Selecionada</button>
+                </div>
+                <div class="table-container" style="max-height: 350px;">
+                    <table class="ios-table compact-table" id="table-montador">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Aplicação</th>
+                                <th>Disciplina</th>
+                                <th>Turma</th>
+                                <th>Professor</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-montador"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </section>
+        
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
