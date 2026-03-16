@@ -102,30 +102,28 @@
         <!-- ================= SELEÇÃO TAB ================= -->
         <section id="tab-selecao" class="tab-pane">
             <header>
-                <h1>Seleção para Provas</h1>
-                <p class="subtitle">Selecione quais disciplinas farão parte do calendário.</p>
+                <h1>Mural de Seleção para o Calendário</h1>
+                <p class="subtitle" style="margin-bottom: 25px;">Dois cliques para mover itens entre as listas</p>
             </header>
 
-            <div class="card">
+            <div class="actions-grid" style="margin-bottom: 5px; gap: 15px;">
+                <button class="btn btn-secondary btn-sm" onclick="adicionarNaoEletivas()">Adicionar Não-Eletivas</button>
+                <button class="btn btn-secondary btn-sm" onclick="adicionarEletivas()">Adicionar Eletivas</button>
+                <button class="btn btn-secondary btn-sm" onclick="adicionarTodas()">Adicionar Todas</button>
+                <button class="btn btn-secondary btn-sm" onclick="removerTodasSelecao()">Remover Todas</button>
+            </div>
+            <div class="actions-grid" style="margin-bottom: 20px; gap: 15px;">
+                <button class="btn btn-secondary btn-sm" onclick="adicionarFund1()">Fundamental I</button>
+                <button class="btn btn-secondary btn-sm" onclick="adicionarFund2()">Fundamental II</button>
+                <button class="btn btn-secondary btn-sm" onclick="adicionarEnsMed()">Ensino Médio</button>
+            </div>
+
+            <div class="card" style="padding: 15px;">
                 <div class="columns-2">
                     <!-- Esquerda: Disponíveis -->
                     <div class="column">
-                        <h3>Disciplinas Disponíveis</h3>
-                        <div class="actions-grid">
-                            <button class="btn btn-secondary btn-sm" onclick="adicionarTodas()">Adicionar Todas</button>
-                            <button class="btn btn-secondary btn-sm" onclick="adicionarFund1()">5º Ano</button>
-                            <button class="btn btn-secondary btn-sm" onclick="adicionarFund2()">6º-9º Ano</button>
-                            <button class="btn btn-secondary btn-sm" onclick="adicionarEnsMed()">Ens. Médio</button>
-                            <button class="btn btn-secondary btn-sm" onclick="adicionarEletivas()">Eletivas</button>
-                        </div>
-                        <div class="table-container list-container mt-10">
+                        <div class="table-container list-container mt-10" style="height: 450px;">
                             <table class="ios-table compact-table">
-                                <thead>
-                                    <tr>
-                                        <th>Disc/Turma/Prof</th>
-                                        <th style="width: 50px;">Ação</th>
-                                    </tr>
-                                </thead>
                                 <tbody id="tbody-disp"></tbody>
                             </table>
                         </div>
@@ -133,18 +131,8 @@
 
                     <!-- Direita: Selecionadas -->
                     <div class="column">
-                        <h3>Disciplinas Selecionadas</h3>
-                        <div class="actions-grid" style="justify-content: flex-end;">
-                            <button class="btn btn-danger btn-sm" onclick="removerTodasSelecao()">Remover Todas</button>
-                        </div>
-                        <div class="table-container list-container mt-10">
+                        <div class="table-container list-container mt-10" style="height: 450px;">
                             <table class="ios-table compact-table">
-                                <thead>
-                                    <tr>
-                                        <th>Disc/Turma/Prof</th>
-                                        <th style="width: 50px;">Ação</th>
-                                    </tr>
-                                </thead>
                                 <tbody id="tbody-sel"></tbody>
                             </table>
                         </div>

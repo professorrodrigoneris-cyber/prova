@@ -20,10 +20,29 @@ function switchTab(tabId, btn) {
 }
 
 // ==========================================
-// UTILITÁRIOS
+// UTILITÁRIOS & INIT
 // ==========================================
 function getUniqueId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+window.onload = function() {
+    fetch('https://professorrodrigoneris-cyber.github.io/prova/disciplinas.csv')
+    .then(response => response.text())
+    .then(csvText => {
+        Papa.parse(csvText, {
+            complete: function(results) {
+                let data = results.data.filter(row => row.length >= 5);
+                if (data[0] && data[0][1] === "Disciplina") {
+                    data.shift();
+                }
+                disciplinas = data.map(r => [r[0], r[1], r[2], r[3], r[4]]);
+                renderizarTabelaDisciplinas();
+                carregarSelecaoUI();
+            }
+        });
+    })
+    .catch(err => console.log("Erro ao carregar BD online: ", err));
 }
 
 // ==========================================
@@ -155,10 +174,9 @@ function carregarSelecaoUI() {
     disciplinas.forEach(d => {
         if (!selIds.includes(d[0])) {
             let tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${d[1]} | ${d[2]} (${d[3]})</td>
-                <td><button class="btn btn-primary btn-sm" onclick="selecionarDisc('${d[0]}')">+</button></td>
-            `;
+            tr.style.cursor = "pointer";
+            tr.innerHTML = `<td>${d[1]} | ${d[2]} (${d[3]})</td>`;
+            tr.ondblclick = () => selecionarDisc(d[0]);
             tbodyDisp.appendChild(tr);
         }
     });
@@ -166,10 +184,9 @@ function carregarSelecaoUI() {
     // Render Selecionadas
     disciplinasSelecionadas.forEach(d => {
         let tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${d[1]} | ${d[2]} (${d[3]})</td>
-            <td><button class="btn btn-danger btn-sm" onclick="removerSelecaoDisc('${d[0]}')">X</button></td>
-        `;
+        tr.style.cursor = "pointer";
+        tr.innerHTML = `<td>${d[1]} | ${d[2]} (${d[3]})</td>`;
+        tr.ondblclick = () => removerSelecaoDisc(d[0]);
         tbodySel.appendChild(tr);
     });
     
@@ -209,6 +226,16 @@ function addPorTurmasFiltro(turmasArr) {
     let selIds = disciplinasSelecionadas.map(d => String(d[0]));
     disciplinas.forEach(d => {
         if (turmasArr.includes(d[2]) && !selIds.includes(String(d[0]))) {
+            disciplinasSelecionadas.push([...d]);
+        }
+    });
+    carregarSelecaoUI();
+}
+
+function adicionarNaoEletivas() {
+    let selIds = disciplinasSelecionadas.map(d => String(d[0]));
+    disciplinas.forEach(d => {
+        if (String(d[4]) !== "Sim" && !selIds.includes(String(d[0]))) {
             disciplinasSelecionadas.push([...d]);
         }
     });
