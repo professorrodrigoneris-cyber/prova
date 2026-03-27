@@ -113,6 +113,7 @@ function selecionarDisciplinaParaEdicao(d, trElement) {
     document.getElementById("btn-salvar-disc").innerText = "Atualizar / Modificar";
     document.getElementById("btn-salvar-disc").classList.remove("btn-primary");
     document.getElementById("btn-salvar-disc").classList.add("btn-danger");
+    document.getElementById("btn-remover-disc").classList.remove("hidden");
     document.getElementById("btn-cancel-disc").classList.remove("hidden");
 }
 
@@ -127,9 +128,21 @@ function cancelarEdicaoDisc() {
     document.getElementById("btn-salvar-disc").innerText = "Adicionar Disciplina";
     document.getElementById("btn-salvar-disc").classList.add("btn-primary");
     document.getElementById("btn-salvar-disc").classList.remove("btn-danger");
+    document.getElementById("btn-remover-disc").classList.add("hidden");
     document.getElementById("btn-cancel-disc").classList.add("hidden");
     
     document.querySelectorAll('#tbody-disciplinas tr').forEach(r => r.classList.remove('selected'));
+}
+
+function removerDisciplina() {
+    if (!idEdicaoDisc) return;
+    if (confirm("Tem certeza que deseja remover esta disciplina?")) {
+        disciplinas = disciplinas.filter(d => d[0] != idEdicaoDisc);
+        disciplinasSelecionadas = disciplinasSelecionadas.filter(d => d[0] != idEdicaoDisc);
+        cancelarEdicaoDisc();
+        renderizarTabelaDisciplinas();
+        carregarSelecaoUI();
+    }
 }
 
 function adicionarOuSalvarDisciplina() {
