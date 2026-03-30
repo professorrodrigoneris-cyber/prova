@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montador de Provas iOS - Fundamental</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Sobrescrevendo o body global para permitir rolagem nesta página avulsa */
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+            display: block !important;
+        }
+        
+        .standalone-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="standalone-container">
+    <header style="text-align: center; margin-bottom: 30px;">
+        <h1 style="font-size: 2em; font-weight: 700;">Montador de Provas (Fundamental)</h1>
+        <p style="color: #666; margin-top: 5px;">Ambiente exclusivo para montagem da lista de provas do Fundamental</p>
+        <div style="margin-top: 15px;">
+            <a href="index.html" class="btn btn-secondary btn-sm" style="text-decoration: none;">&larr; Voltar para a Tela Inicial</a>
+        </div>
+    </header>
+
+    <div class="card">
+        <h3>Período das Provas</h3>
+        <div class="form-row align-center">
+            <div class="input-group">
+                <label>Data Início (DD/MM/AAAA)</label>
+                <input type="text" id="data-inicio" onfocus="this.type='date'" onblur="this.type='text'">
+            </div>
+            <div class="input-group">
+                <label>Data Fim (DD/MM/AAAA)</label>
+                <input type="text" id="data-fim" onfocus="this.type='date'" onblur="this.type='text'">
+            </div>
+            <button class="btn btn-secondary" onclick="atualizarListaDatas()" style="margin-top: 22px;">Atualizar Datas</button>
+            
+            <div style="flex:1"></div>
+            
+            <label class="btn btn-secondary" style="margin-top: 22px;">
+                Abrir Lista (CSV)
+                <input type="file" id="import-montador" accept=".csv" style="display: none;">
+            </label>
+            <button class="btn btn-secondary" style="margin-top: 22px;" onclick="exportarMontadorCSV()">Salvar CSV</button>
+            <button class="btn btn-primary" style="margin-top: 22px;" onclick="exportarWord()">Exportar Word</button>
+        </div>
+        
+        <h3 class="mt-20">Adicionar Prova</h3>
+        <div class="form-row">
+            <div class="input-group">
+                <label>Data</label>
+                <select id="mont-data"></select>
+            </div>
+            <div class="input-group">
+                <label>Turma</label>
+                <select id="mont-turma" onchange="atualizarDisciplinasMontador()"></select>
+            </div>
+            <div class="input-group">
+                <label>Disciplina</label>
+                <select id="mont-disc"></select>
+            </div>
+        </div>
+        <div class="form-row mt-10">
+            <div class="input-group">
+                <label>Aplicação</label>
+                <select id="mont-app">
+                    <option>1ª Aplicação</option>
+                    <option>2ª Aplicação</option>
+                    <option>3ª Aplicação</option>
+                    <option>4ª Aplicação</option>
+                </select>
+            </div>
+            <div class="input-group" style="flex: 2;">
+                <label>Observação (Opcional p/ liberar conflitos)</label>
+                <input type="text" id="mont-obs" placeholder="Ex: Prova conjunta, substituto, etc">
+            </div>
+        </div>
+        
+        <div class="actions-row mt-10">
+            <button class="btn btn-secondary" id="btn-mont-add" onclick="salvarMontador()">Adicionar à Lista</button>
+            <button class="btn btn-secondary hidden" id="btn-mont-cancel" onclick="cancelarEdicaoMontador()">Cancelar Edição</button>
+        </div>
+    </div>
+
+    <div class="card mt-20">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3>Lista de Provas</h3>
+            <button class="btn btn-danger btn-sm" onclick="removerProvaSelecionada()">Excluir Selecionada</button>
+        </div>
+        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+            <table class="ios-table compact-table" id="table-montador">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Aplicação</th>
+                        <th>Disciplina</th>
+                        <th>Turma</th>
+                        <th>Professor</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-montador"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="fundamental.js"></script>
+</body>
+</html>

@@ -27,6 +27,9 @@
             <button class="menu-btn active" onclick="switchTab('disciplinas', this)">📚 Disciplinas</button>
             <button class="menu-btn" onclick="switchTab('selecao', this)">✅ Seleção</button>
             <button class="menu-btn" onclick="switchTab('montador', this)">📝 Montar Prova</button>
+            <div style="border-top: 1px solid var(--ios-border); margin: 10px 0;"></div>
+            <button class="menu-btn" onclick="window.location.href='fundamental.html'">🎒 Fundamental (Avulso)</button>
+            <button class="menu-btn" onclick="window.location.href='fundamentalautomatico.html'">🤖 Gerador Automático</button>
         </nav>
     </aside>
 
@@ -197,8 +200,8 @@
                         </select>
                     </div>
                     <div class="input-group" style="flex: 2;">
-                        <label>Observação (Opcional p/ liberar conflitos)</label>
-                        <input type="text" id="mont-obs" placeholder="Ex: Prova conjunta, substituto, etc">
+                        <label>Observação (Libera conflito de Turma)</label>
+                        <input type="text" id="mont-obs" placeholder="Ex: Prova conjunta, etc">
                     </div>
                 </div>
                 

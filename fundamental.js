@@ -1,23 +1,10 @@
 // ==========================================
-// ESTADO GLOBAL DO APLICATIVO
+// ESTADO GLOBAL - FUNDAMENTAL
 // ==========================================
-let disciplinas = []; // [ [ID, Disciplina, Turma, Professor, Eletiva] ]
 let disciplinasSelecionadas = []; // [ [ID, Disciplina, Turma, Professor, Eletiva] ]
 let montadorLista = []; // [ [ID, Data, App, Disc, Turma, Prof, Obs] ]
-let idEdicaoDisc = null;
 let idEdicaoMont = null;
 let dataDisponiveis = [];
-
-// ==========================================
-// NAVEGAÇÃO DE ABAS
-// ==========================================
-function switchTab(tabId, btn) {
-    document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-' + tabId).classList.add('active');
-    
-    document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-}
 
 // ==========================================
 // UTILITÁRIOS & INIT
@@ -27,260 +14,157 @@ function getUniqueId() {
 }
 
 window.onload = function() {
-    fetch('https://professorrodrigoneris-cyber.github.io/prova/disciplinas.csv')
-    .then(response => response.text())
-    .then(csvText => {
-        Papa.parse(csvText, {
-            complete: function(results) {
-                let data = results.data.filter(row => row.length >= 5);
-                if (data[0] && data[0][1] === "Disciplina") {
-                    data.shift();
-                }
-                disciplinas = data.map(r => [r[0], r[1], r[2], r[3], r[4]]);
-                renderizarTabelaDisciplinas();
-                carregarSelecaoUI();
-            }
-        });
-    })
-    .catch(err => console.log("Erro ao carregar BD online: ", err));
-}
+    // Usando corsproxy.io
+    const driveUrl = 'https://drive.google.com/uc?export=download&id=1lHFJWDuw7ZFhqCbpzsDXsu0Ogsu1DEYg';
+    const csvUrl = 'https://corsproxy.io/?' + encodeURIComponent(driveUrl);
+    
+    // Fallback completo embutido (à prova de falhas offline/CORS)
+    const fallbackCSV = `disciplina,turma,professor
+Geografia,1º ANO A,Juliana
+História,1º ANO A,Juliana
+Ciências,1º ANO A,Juliana
+Língua portuguesa,1º ANO A,Juliana
+Matemática,1º ANO A,Juliana
+Filosofia,1º ANO A,Juliana
+Arte,1º ANO A,Juliana
+Inglês,1º ANO A,Rodrigo
+Pensamento Computacional,1º ANO A,Rodrigo
+Educação Física,1º ANO A,Hérica
+Geografia,1º ANO B,Jocilene
+História,1º ANO B,Jocilene
+Ciências,1º ANO B,Jocilene
+Língua portuguesa,1º ANO B,Jocilene
+Matemática,1º ANO B,Jocilene
+Filosofia,1º ANO B,Jocilene
+Arte,1º ANO B,Jocilene
+Inglês,1º ANO B,Rodrigo
+Pensamento Computacional,1º ANO B,Rodrigo
+Educação Física,1º ANO B,Hérica
+Geografia,2º ANO A,Josiane
+História,2º ANO A,Josiane
+Ciências,2º ANO A,Josiane
+Língua portuguesa,2º ANO A,Josiane
+Matemática,2º ANO A,Josiane
+Filosofia,2º ANO A,Josiane
+Arte,2º ANO A,Josiane
+Inglês,2º ANO A,Rodrigo
+Pensamento Computacional,2º ANO A,Rodrigo
+Educação Física,2º ANO A,Hérica
+Geografia,2º ANO B,Raiza
+História,2º ANO B,Raiza
+Ciências,2º ANO B,Raiza
+Língua portuguesa,2º ANO B,Raiza
+Matemática,2º ANO B,Raiza
+Filosofia,2º ANO B,Raiza
+Arte,2º ANO B,Raiza
+Inglês,2º ANO B,Rodrigo
+Pensamento Computacional,2º ANO B,Rodrigo
+Educação Física,2º ANO B,Hérica
+Geografia,3º ANO A,Gilma
+História,3º ANO A,Gilma
+Ciências,3º ANO A,Gilma
+Língua portuguesa,3º ANO A,Gilma
+Matemática,3º ANO A,Gilma
+Filosofia,3º ANO A,Gilma
+Arte,3º ANO A,Gilma
+Inglês,3º ANO A,Rodrigo
+Pensamento Computacional,3º ANO A,Rodrigo
+Educação Física,3º ANO A,Hérica
+Geografia,3º ANO B,Eline
+História,3º ANO B,Eline
+Ciências,3º ANO B,Eline
+Língua portuguesa,3º ANO B,Eline
+Matemática,3º ANO B,Eline
+Filosofia,3º ANO B,Eline
+Arte,3º ANO B,Eline
+Inglês,3º ANO B,Rodrigo
+Pensamento Computacional,3º ANO B,Rodrigo
+Educação Física,3º ANO B,Hérica
+Geografia,4º ANO A,Aline
+História,4º ANO A,Aline
+Ciências,4º ANO A,Aline
+Língua portuguesa,4º ANO A,Aline
+Matemática,4º ANO A,Aline
+Filosofia,4º ANO A,Aline
+Arte,4º ANO A,Aline
+Inglês,4º ANO A,Rodrigo
+Pensamento Computacional,4º ANO A,Rodrigo
+Educação Física,4º ANO A,Hérica
+Geografia,5º ANO A,Raphaela
+História,5º ANO A,Raphaela
+Ciências,5º ANO A,Raphaela
+Língua portuguesa,5º ANO A,Raphaela
+Matemática,5º ANO A,Raphaela
+Filosofia,5º ANO A,Raphaela
+Arte,5º ANO A,Raphaela
+Inglês,5º ANO A,Rodrigo
+Pensamento Computacional,5º ANO A,Rodrigo
+Educação Física,5º ANO A,Hérica`;
 
-// ==========================================
-// TAB: DISCIPLINAS
-// ==========================================
-
-// Importar CSV
-document.getElementById('import-disciplinas').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    Papa.parse(file, {
+    Papa.parse(csvUrl, {
+        download: true,
+        header: false,
         complete: function(results) {
-            let data = results.data.filter(row => row.length >= 5);
-            // Ignore header if present
-            if (data[0] && data[0][1] === "Disciplina") {
-                data.shift();
+            let data = results.data;
+            if (data[0] && data[0][0] && data[0][0].toLowerCase() === "disciplina") {
+                data.shift(); // Remove cabeçalho
             }
-            disciplinas = data.map(r => [r[0], r[1], r[2], r[3], r[4]]);
-            renderizarTabelaDisciplinas();
-            carregarSelecaoUI();
+
+            disciplinasSelecionadas = [];
+            data.forEach((row, index) => {
+                if(row.length >= 3) {
+                    let id = getUniqueId() + index;
+                    let disc = row[0].trim();
+                    let turma = row[1].trim();
+                    let prof = row[2].trim();
+                    let elet = "Não"; 
+                    if (disc && turma && prof) {
+                        disciplinasSelecionadas.push([id, disc, turma, prof, elet]);
+                    }
+                }
+            });
+            carregarTurmasMontador();
+        },
+        error: function(err) {
+            console.warn("Proxy CORS falhou. Usando banco de dados emergencial interno...", err);
+            Papa.parse(fallbackCSV, {
+                download: false,
+                header: false,
+                complete: function(resFallback) {
+                    let data = resFallback.data;
+                    if (data[0] && data[0][0] && data[0][0].toLowerCase() === "disciplina") {
+                        data.shift();
+                    }
+                    disciplinasSelecionadas = [];
+                    data.forEach((row, index) => {
+                        if(row.length >= 3) {
+                            let id = getUniqueId() + index;
+                            let disc = row[0].trim();
+                            let turma = row[1].trim();
+                            let prof = row[2].trim();
+                            let elet = "Não"; 
+                            if (disc && turma && prof) {
+                                disciplinasSelecionadas.push([id, disc, turma, prof, elet]);
+                            }
+                        }
+                    });
+                    carregarTurmasMontador();
+                }
+            });
         }
     });
-});
-
-function limparTabelaDisciplinas() {
-    disciplinas = [];
-    disciplinasSelecionadas = [];
-    renderizarTabelaDisciplinas();
-    carregarSelecaoUI();
 }
-
-function salvarDisciplinasCSV() {
-    if(disciplinas.length === 0) return alert("Nada para salvar.");
-    let header = ["ID", "Disciplina", "Turma", "Professor", "Eletiva"];
-    let csv = Papa.unparse({ fields: header, data: disciplinas });
-    var blob = new Blob([csv], {type: "text/csv;charset=utf-8"});
-    saveAs(blob, "disciplinas.csv");
-}
-
-function renderizarTabelaDisciplinas() {
-    const tbody = document.getElementById("tbody-disciplinas");
-    tbody.innerHTML = "";
-    disciplinas.forEach(d => {
-        let tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${d[0] || ""}</td>
-            <td>${d[1] || ""}</td>
-            <td>${d[2] || ""}</td>
-            <td>${d[3] || ""}</td>
-            <td>${d[4] || ""}</td>
-        `;
-        tr.onclick = () => selecionarDisciplinaParaEdicao(d, tr);
-        tbody.appendChild(tr);
-    });
-}
-
-function selecionarDisciplinaParaEdicao(d, trElement) {
-    document.querySelectorAll('#tbody-disciplinas tr').forEach(r => r.classList.remove('selected'));
-    trElement.classList.add('selected');
-    
-    idEdicaoDisc = d[0];
-    document.getElementById("disc-id").value = d[0];
-    document.getElementById("disc-nome").value = d[1];
-    document.getElementById("disc-turma").value = d[2];
-    document.getElementById("disc-prof").value = d[3];
-    document.getElementById("disc-eletiva").value = d[4];
-
-    document.getElementById("btn-salvar-disc").innerText = "Atualizar / Modificar";
-    document.getElementById("btn-salvar-disc").classList.remove("btn-primary");
-    document.getElementById("btn-salvar-disc").classList.add("btn-danger");
-    document.getElementById("btn-remover-disc").classList.remove("hidden");
-    document.getElementById("btn-cancel-disc").classList.remove("hidden");
-}
-
-function cancelarEdicaoDisc() {
-    idEdicaoDisc = null;
-    document.getElementById("disc-id").value = "";
-    document.getElementById("disc-nome").value = "";
-    document.getElementById("disc-turma").value = "";
-    document.getElementById("disc-prof").value = "";
-    document.getElementById("disc-eletiva").selectedIndex = 0;
-    
-    document.getElementById("btn-salvar-disc").innerText = "Adicionar Disciplina";
-    document.getElementById("btn-salvar-disc").classList.add("btn-primary");
-    document.getElementById("btn-salvar-disc").classList.remove("btn-danger");
-    document.getElementById("btn-remover-disc").classList.add("hidden");
-    document.getElementById("btn-cancel-disc").classList.add("hidden");
-    
-    document.querySelectorAll('#tbody-disciplinas tr').forEach(r => r.classList.remove('selected'));
-}
-
-function removerDisciplina() {
-    if (!idEdicaoDisc) return;
-    if (confirm("Tem certeza que deseja remover esta disciplina?")) {
-        disciplinas = disciplinas.filter(d => d[0] != idEdicaoDisc);
-        disciplinasSelecionadas = disciplinasSelecionadas.filter(d => d[0] != idEdicaoDisc);
-        cancelarEdicaoDisc();
-        renderizarTabelaDisciplinas();
-        carregarSelecaoUI();
-    }
-}
-
-function adicionarOuSalvarDisciplina() {
-    let nome = document.getElementById("disc-nome").value.trim();
-    let turma = document.getElementById("disc-turma").value.trim();
-    let prof = document.getElementById("disc-prof").value.trim();
-    let elet = document.getElementById("disc-eletiva").value;
-
-    if (!nome || !turma || !prof) return alert("Preencha todos os campos obrigatórios.");
-
-    if (idEdicaoDisc) {
-        // Atualiza existing
-        for (let i = 0; i < disciplinas.length; i++) {
-            if (disciplinas[i][0] == idEdicaoDisc) {
-                disciplinas[i] = [idEdicaoDisc, nome, turma, prof, elet];
-                break;
-            }
-        }
-    } else {
-        // Adiciona novo
-        disciplinas.push([getUniqueId(), nome, turma, prof, elet]);
-    }
-
-    cancelarEdicaoDisc();
-    renderizarTabelaDisciplinas();
-    carregarSelecaoUI();
-}
-
 // ==========================================
-// TAB: SELEÇÃO
-// ==========================================
-function carregarSelecaoUI() {
-    let tbodyDisp = document.getElementById("tbody-disp");
-    let tbodySel = document.getElementById("tbody-sel");
-    
-    tbodyDisp.innerHTML = "";
-    tbodySel.innerHTML = "";
-
-    let selIds = disciplinasSelecionadas.map(d => d[0]);
-
-    // Render Disponíveis
-    disciplinas.forEach(d => {
-        if (!selIds.includes(d[0])) {
-            let tr = document.createElement("tr");
-            tr.style.cursor = "pointer";
-            tr.innerHTML = `<td>${d[1]} | ${d[2]} (${d[3]})</td>`;
-            tr.ondblclick = () => selecionarDisc(d[0]);
-            tbodyDisp.appendChild(tr);
-        }
-    });
-
-    // Render Selecionadas
-    disciplinasSelecionadas.forEach(d => {
-        let tr = document.createElement("tr");
-        tr.style.cursor = "pointer";
-        tr.innerHTML = `<td>${d[1]} | ${d[2]} (${d[3]})</td>`;
-        tr.ondblclick = () => removerSelecaoDisc(d[0]);
-        tbodySel.appendChild(tr);
-    });
-    
-    // Atualizar UI Montador em cascata
-    carregarTurmasMontador();
-}
-
-function selecionarDisc(id) {
-    let disc = disciplinas.find(d => d[0] == id);
-    if (disc && !disciplinasSelecionadas.find(d => d[0] == id)) {
-        disciplinasSelecionadas.push([...disc]);
-    }
-    carregarSelecaoUI();
-}
-
-function removerSelecaoDisc(id) {
-    disciplinasSelecionadas = disciplinasSelecionadas.filter(d => d[0] != id);
-    carregarSelecaoUI();
-}
-
-function adicionarTodas() {
-    let selIds = disciplinasSelecionadas.map(d => String(d[0]));
-    disciplinas.forEach(d => {
-        if (!selIds.includes(String(d[0])) && String(d[4]) !== "Sim")  {
-            disciplinasSelecionadas.push([...d]);
-        }
-    });
-    carregarSelecaoUI();
-}
-
-function removerTodasSelecao() {
-    disciplinasSelecionadas = [];
-    carregarSelecaoUI();
-}
-
-function addPorTurmasFiltro(turmasArr) {
-    let selIds = disciplinasSelecionadas.map(d => String(d[0]));
-    disciplinas.forEach(d => {
-        if (turmasArr.includes(d[2]) && !selIds.includes(String(d[0]))) {
-            disciplinasSelecionadas.push([...d]);
-        }
-    });
-    carregarSelecaoUI();
-}
-
-function adicionarNaoEletivas() {
-    let selIds = disciplinasSelecionadas.map(d => String(d[0]));
-    disciplinas.forEach(d => {
-        if (String(d[4]) !== "Sim" && !selIds.includes(String(d[0]))) {
-            disciplinasSelecionadas.push([...d]);
-        }
-    });
-    carregarSelecaoUI();
-}
-
-function adicionarFund1() { addPorTurmasFiltro(["5º Ano"]); }
-function adicionarFund2() { addPorTurmasFiltro(["6º Ano A", "6º Ano B", "7º Ano", "8º Ano", "9º Ano"]); }
-function adicionarEnsMed() { addPorTurmasFiltro(["1º Médio", "2º Médio", "3º Médio"]); }
-function adicionarEletivas() {
-    let selIds = disciplinasSelecionadas.map(d => String(d[0]));
-    disciplinas.forEach(d => {
-        if (String(d[4]) === "Sim" && !selIds.includes(String(d[0]))) {
-            disciplinasSelecionadas.push([...d]);
-        }
-    });
-    carregarSelecaoUI();
-}
-
-// ==========================================
-// TAB: MONTADOR DE PROVAS
+// MONTADOR DE PROVAS - DATAS
 // ==========================================
 
 function formatDate(dateStr) {
-    // Basic yyyy-mm-dd to dd/mm/yyyy
     let parts = dateStr.split('-');
     if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
     return dateStr;
 }
 
 function parseDate(dateStr) {
-    // dd/mm/yyyy to Date
     let parts = dateStr.split('/');
     if(parts.length===3) return new Date(parts[2], parts[1]-1, parts[0]);
     return new Date(dateStr);
@@ -290,7 +174,6 @@ function atualizarListaDatas() {
     let dinicio = document.getElementById("data-inicio").value;
     let dfim = document.getElementById("data-fim").value;
     
-    // Suporte aos dois formatos dependendo se o browser processou html5 date
     if (dinicio.includes('-')) dinicio = formatDate(dinicio);
     if (dfim.includes('-')) dfim = formatDate(dfim);
 
@@ -299,7 +182,7 @@ function atualizarListaDatas() {
     let dt1 = parseDate(dinicio);
     let dt2 = parseDate(dfim);
     
-    if (dt1 > dt2) return alert("Data início maior que data fim!");
+    if (dt1 > dt2) return alert("Data início maior que a data de fim!");
 
     dataDisponiveis = [];
     let curr = new Date(dt1);
@@ -311,12 +194,10 @@ function atualizarListaDatas() {
         curr.setDate(curr.getDate() + 1);
     }
     
-    // Força inclusao das datas que já estão salvas na lista
     montadorLista.forEach(row => {
         if (!dataDisponiveis.includes(row[1])) dataDisponiveis.push(row[1]);
     });
     
-    // Sort
     dataDisponiveis.sort((a,b) => parseDate(a) - parseDate(b));
 
     let comboData = document.getElementById("mont-data");
@@ -330,7 +211,6 @@ function atualizarListaDatas() {
 }
 
 function getProvasAgendadasStr() {
-    // Returns set-like array of [Disc, Prof, Turma] already scheduled
     return montadorLista.map(row => `${row[3]}|${row[5]}|${row[4]}`);
 }
 
@@ -339,7 +219,6 @@ function carregarTurmasMontador() {
     let turmas = new Set();
     
     disciplinasSelecionadas.forEach(d => {
-        // d: ID, Disc, Turma, Prof, Elet
         let key = `${d[1]}|${d[3]}|${d[2]}`;
         if (!agendadas.includes(key)) {
             turmas.add(d[2]);
@@ -410,7 +289,7 @@ function salvarMontador() {
     // Conflitos Validations
     for (let i = 0; i < montadorLista.length; i++) {
         let salvo = montadorLista[i];
-        let salvo_id = salvo[0], salvo_data = salvo[1], salvo_app = salvo[2], salvo_disc = salvo[3], salvo_turma = salvo[4], salvo_prof = salvo[5];
+        let salvo_id = salvo[0], salvo_data = salvo[1], salvo_app = salvo[2], salvo_turma = salvo[4], salvo_prof = salvo[5];
 
         if (idEdicaoMont && salvo_id == idEdicaoMont) continue;
 
@@ -420,10 +299,10 @@ function salvarMontador() {
             }
         }
 
-        // Analisa no quadro se o professor está aplicando a prova em outra turma no mesmo dia e na mesma aplicação
-        // Bloqueio rigoroso: O professor não pode estar em dois lugares ao mesmo tempo
         if (salvo_data === data && salvo_prof === prof && salvo_app === app) {
-            return alert(`Conflito de Professor:\nO professor(a) ${prof} já está aplicando prova de ${salvo_disc} na turma '${salvo_turma}' na ${app} deste dia.\n\nPor favor, escolha outra Aplicação ou Data para esta prova.`);
+            if (!obs) {
+                return alert(`Atenção - Conflito de Professor:\nO professor(a) ${prof} já está aplicando prova na turma '${salvo_turma}' na ${app} deste dia.\n\nInforme uma observação (ex: Prova conjunta) para registrar outra turma.`);
+            }
         }
     }
 
@@ -447,7 +326,6 @@ function renderizarTabelaMontador() {
     let tbody = document.getElementById("tbody-montador");
     tbody.innerHTML = "";
     
-    // Sort -> by Date then Application ID (1,2,3,4)
     let listaSorted = [...montadorLista].sort((a,b) => {
         let tA = parseDate(a[1]).getTime();
         let tB = parseDate(b[1]).getTime();
@@ -481,8 +359,6 @@ function carregarParaEdicaoMont(row, trElement) {
     
     provaSelecionadaElement = trElement;
     provaSelecionadaId = row[0];
-
-    // Popula UI para edicao
     idEdicaoMont = row[0];
     
     let comboData = document.getElementById("mont-data");
@@ -571,15 +447,14 @@ function exportarMontadorCSV() {
     let cvsD = montadorLista.map(row => [row[0], row[1], row[2], row[3], row[4], row[5], row[6]]);
     let csv = Papa.unparse({ fields: header, data: cvsD });
     var blob = new Blob([csv], {type: "text/csv;charset=utf-8"});
-    saveAs(blob, "Lista_Montador.csv");
+    saveAs(blob, "Lista_Montador_Fundamental.csv");
 }
 
 function exportarWord() {
     if (montadorLista.length === 0) return alert("A lista está vazia.");
     try {
-        const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } = window.docx;
+        const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType } = window.docx;
 
-        // Sort data chronologically and by application
         let listaSorted = [...montadorLista].sort((a,b) => {
             let tA = parseDate(a[1]).getTime();
             let tB = parseDate(b[1]).getTime();
@@ -589,7 +464,6 @@ function exportarWord() {
             return pA - pB;
         });
 
-        // Group by Date
         let mapDatas = {};
         listaSorted.forEach(row => {
             if (!mapDatas[row[1]]) mapDatas[row[1]] = [];
@@ -598,11 +472,10 @@ function exportarWord() {
 
         let docChildren = [];
 
-        // Title
         docChildren.push(
             new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [ new TextRun({ text: "Calendário de provas", bold: true, size: 28, font: "Arial" }) ],
+                children: [ new TextRun({ text: "Calendário de provas - Fundamental", bold: true, size: 28, font: "Arial" }) ],
                 spacing: { after: 300 }
             })
         );
@@ -623,7 +496,6 @@ function exportarWord() {
         for (const [dataChave, registros] of Object.entries(mapDatas)) {
             let tableRows = [];
 
-            // Header Row
             tableRows.push(new TableRow({
                 children: [
                     createTableCell("Data", true),
@@ -635,7 +507,6 @@ function exportarWord() {
                 ]
             }));
 
-            // Data Rows
             registros.forEach(row => {
                 let dataVal = row[1].length > 5 ? row[1].substring(0, 5) : row[1];
                 tableRows.push(new TableRow({
@@ -656,7 +527,7 @@ function exportarWord() {
             });
 
             docChildren.push(table);
-            docChildren.push(new Paragraph({ text: "", spacing: { after: 400 } })); // Spacer
+            docChildren.push(new Paragraph({ text: "", spacing: { after: 400 } }));
         }
 
         const doc = new Document({
@@ -667,10 +538,10 @@ function exportarWord() {
         });
 
         Packer.toBlob(doc).then(blob => {
-            saveAs(blob, "Calendario_Provas.docx");
+            saveAs(blob, "Calendario_Provas_Fundamental.docx");
         });
     } catch (e) {
         console.error(e);
-        alert("Erro ao exportar Word. O framework pode não ter carregado corretamente do servidor.");
+        alert("Erro ao exportar Word. Verifique a compatibilidade do docx.");
     }
 }

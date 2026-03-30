@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador Automático - Fundamental</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+            display: block !important;
+        }
+        .standalone-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .config-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--ios-border);
+            border-radius: 8px;
+            padding: 10px;
+            background: #FAFAFA;
+        }
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .config-item:last-child {
+            border-bottom: none;
+        }
+        .btn-success {
+            background-color: #34C759;
+            color: white;
+            font-size: 16px;
+            padding: 15px 30px;
+            height: auto;
+        }
+        .btn-success:hover {
+            background-color: #248A3D;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="standalone-container">
+    <header style="text-align: center; margin-bottom: 30px;">
+        <h1 style="font-size: 2em; font-weight: 700;">Gerador Automático (Fundamental)</h1>
+        <p style="color: #666; margin-top: 5px;">Configure as regras e deixe o sistema montar o calendário sem choques!</p>
+        <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+            <a href="index.html" class="btn btn-secondary btn-sm" style="text-decoration: none;">&larr; Voltar para a Tela Inicial</a>
+            <label class="btn btn-secondary btn-sm" style="cursor: pointer; font-weight: normal;">
+                📂 Carregar Banco Manual (Caso dê erro)
+                <input type="file" accept=".csv" style="display: none;" onchange="importarBDManual(this)">
+            </label>
+        </div>
+    </header>
+
+    <div class="card">
+        <h3>1. Configurações Gerais</h3>
+        <div class="form-row align-center">
+            <div class="input-group">
+                <label>Data Início (DD/MM/AAAA)</label>
+                <input type="text" id="data-inicio" onfocus="this.type='date'" onblur="this.type='text'">
+            </div>
+            <div class="input-group">
+                <label>Data Fim (DD/MM/AAAA)</label>
+                <input type="text" id="data-fim" onfocus="this.type='date'" onblur="this.type='text'">
+            </div>
+            <div class="input-group">
+                <label>Máx. Provas por Dia (por Turma)</label>
+                <input type="number" id="max-provas-dia" value="2" min="1" max="5">
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <!-- Professores -->
+        <div class="card" style="margin-bottom: 0;">
+            <h3>2. Disponibilidade dos Professores</h3>
+            <p style="font-size: 13px; color: var(--ios-text-muted); margin-bottom: 15px;">
+                Desmarque os dias que o professor <strong>NÃO ESTARÁ</strong> na escola.
+            </p>
+            <div class="config-list" id="lista-professores">
+                <!-- Carregado via JS -->
+                <div style="padding: 10px; text-align: center; color: #888;">Carregando professores...</div>
+            </div>
+        </div>
+
+        <!-- Matérias / Aplicação -->
+        <div class="card" style="margin-bottom: 0;">
+            <h3>3. Posição Prioritária (1ª, 2ª ou 3ª Aplicação)</h3>
+            <p style="font-size: 13px; color: var(--ios-text-muted); margin-bottom: 15px;">
+                Defina em qual ordem (momento do dia) a matéria costuma ser aplicada de preferência.
+            </p>
+            <div class="config-list" id="lista-materias">
+                <!-- Carregado via JS -->
+                <div style="padding: 10px; text-align: center; color: #888;">Carregando disciplinas...</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 30px;">
+        <button class="btn btn-success" onclick="gerarAutomatico()">✨ Gerar Quadro Automático ✨</button>
+    </div>
+
+    <div class="card" id="resultado-container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3>Quadro Gerado</h3>
+            <div>
+                <button class="btn btn-secondary btn-sm" onclick="exportarMontadorCSV()">Salvar CSV</button>
+                <button class="btn btn-primary btn-sm" onclick="exportarWord()">Exportar Word</button>
+            </div>
+        </div>
+        <div id="status-geracao" style="margin-bottom: 15px; font-weight: 500;"></div>
+        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+            <table class="ios-table compact-table" id="table-montador">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Dia Semana</th>
+                        <th>Aplicação</th>
+                        <th>Disciplina</th>
+                        <th>Turma</th>
+                        <th>Professor</th>
+                        <th>Problemas?</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-montador"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="fundamentalautomatico.js"></script>
+</body>
+</html>
