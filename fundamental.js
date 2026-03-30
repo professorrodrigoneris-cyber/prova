@@ -103,58 +103,58 @@ Inglês,5º ANO A,Rodrigo
 Pensamento Computacional,5º ANO A,Rodrigo
 Educação Física,5º ANO A,Hérica`;
 
-    Papa.parse(csvUrl, {
-        download: true,
-        header: false,
-        complete: function(results) {
-            let data = results.data;
-            if (data[0] && data[0][0] && data[0][0].toLowerCase() === "disciplina") {
-                data.shift(); // Remove cabeçalho
-            }
-
-            disciplinasSelecionadas = [];
-            data.forEach((row, index) => {
-                if(row.length >= 3) {
-                    let id = getUniqueId() + index;
-                    let disc = row[0].trim();
-                    let turma = row[1].trim();
-                    let prof = row[2].trim();
-                    let elet = "Não"; 
-                    if (disc && turma && prof) {
-                        disciplinasSelecionadas.push([id, disc, turma, prof, elet]);
-                    }
+    function onDataParsed(data) {
+        if (data[0] && data[0][0] && data[0][0].toLowerCase() === "disciplina") {
+            data.shift(); // Remove cabeçalho
+        }
+        disciplinasSelecionadas = [];
+        data.forEach((row, index) => {
+            if(row.length >= 3) {
+                let id = getUniqueId() + index;
+                let disc = row[0].trim();
+                let turma = row[1].trim();
+                let prof = row[2].trim();
+                let elet = "Não"; 
+                if (disc && turma && prof) {
+                    disciplinasSelecionadas.push([id, disc, turma, prof, elet]);
                 }
+            }
+        });
+        carregarTurmasMontador();
+    }
+
+    const allOriginsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(driveUrl)}`;
+
+    fetch(allOriginsUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Proxy respondeu com erro');
+            return response.json();
+        })
+        .then(data => {
+            let csvText = "";
+            if (data.contents && data.contents.startsWith('data:')) {
+                let base64str = data.contents.split(',')[1];
+                csvText = decodeURIComponent(escape(window.atob(base64str)));
+            } else if (data.contents) {
+                csvText = data.contents;
+            } else {
+                throw new Error('Sem conteúdo no proxy');
+            }
+            
+            Papa.parse(csvText, {
+                download: false,
+                header: false,
+                complete: function(results) { onDataParsed(results.data); }
             });
-            carregarTurmasMontador();
-        },
-        error: function(err) {
+        })
+        .catch(err => {
             console.warn("Proxy CORS falhou. Usando banco de dados emergencial interno...", err);
             Papa.parse(fallbackCSV, {
                 download: false,
                 header: false,
-                complete: function(resFallback) {
-                    let data = resFallback.data;
-                    if (data[0] && data[0][0] && data[0][0].toLowerCase() === "disciplina") {
-                        data.shift();
-                    }
-                    disciplinasSelecionadas = [];
-                    data.forEach((row, index) => {
-                        if(row.length >= 3) {
-                            let id = getUniqueId() + index;
-                            let disc = row[0].trim();
-                            let turma = row[1].trim();
-                            let prof = row[2].trim();
-                            let elet = "Não"; 
-                            if (disc && turma && prof) {
-                                disciplinasSelecionadas.push([id, disc, turma, prof, elet]);
-                            }
-                        }
-                    });
-                    carregarTurmasMontador();
-                }
+                complete: function(resFallback) { onDataParsed(resFallback.data); }
             });
-        }
-    });
+        });
 }
 // ==========================================
 // MONTADOR DE PROVAS - DATAS
