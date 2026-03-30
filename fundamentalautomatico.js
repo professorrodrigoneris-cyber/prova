@@ -7,11 +7,9 @@ let discPrioridade = {}; // "Disc": 1 (Aplicação preferida)
 let montadorLista = []; // The generated result
 
 window.onload = function() {
-    // Usando corsproxy.io por ser mais estável que allorigins
-    const driveUrl = 'https://drive.google.com/uc?export=download&id=1lHFJWDuw7ZFhqCbpzsDXsu0Ogsu1DEYg';
-    const csvUrl1 = 'https://corsproxy.io/?' + encodeURIComponent(driveUrl);
+    const githubUrl = 'https://professorrodrigoneris-cyber.github.io/prova/disciplinas.csv';
     
-    // Fallback completo embutido (à prova de falhas offline/CORS)
+    // Fallback completo embutido (à prova de falhas offline/CORS) para formato antigo
     const fallbackCSV = `disciplina,turma,professor
 Geografia,1º ANO A,Juliana
 História,1º ANO A,Juliana
@@ -94,14 +92,14 @@ Inglês,5º ANO A,Rodrigo
 Pensamento Computacional,5º ANO A,Rodrigo
 Educação Física,5º ANO A,Hérica`;
 
-    Papa.parse(csvUrl1, {
+    Papa.parse(githubUrl, {
         download: true,
         header: false,
         complete: function(results) {
             processarCSVDados(results.data);
         },
         error: function(err1) {
-            console.warn("Proxies do Drive foram bloqueados pela sua rede. Carregando dados de emergência internos...", err1);
+            console.warn("Falha no download da base de dados do GitHub. Carregando dados de emergência internos...", err1);
             Papa.parse(fallbackCSV, {
                 download: false,
                 header: false,
@@ -112,8 +110,14 @@ Educação Física,5º ANO A,Hérica`;
 }
 
 function processarCSVDados(data) {
-    if (data[0] && data[0][0] && data[0][0].toLowerCase() === "disciplina") {
-        data.shift(); 
+    let isNovoFormato = false;
+    
+    // Verifica formato: [ID, Disciplina, Turma, Professor, Eletiva]
+    if (data[0] && data[0].length >= 4 && data[0][1] && data[0][1].toLowerCase() === "disciplina") {
+        isNovoFormato = true;
+        data.shift(); // Remove header
+    } else if (data[0] && data[0][0] && data[0][0].toLowerCase() === "disciplina") {
+        data.shift(); // Remove header antigo
     }
 
     disciplinasBase = [];
@@ -121,16 +125,27 @@ function processarCSVDados(data) {
     let setDisc = new Set();
 
     data.forEach((row, index) => {
-        if(row.length >= 3) {
-            let id = "T" + index;
-            let disc = row[0].trim();
-            let turma = row[1].trim();
-            let prof = row[2].trim();
-            if (disc && turma && prof) {
-                disciplinasBase.push([id, disc, turma, prof, "Não"]);
-                setProf.add(prof);
-                setDisc.add(disc);
+        let disc, turma, prof;
+        
+        if (isNovoFormato) {
+            if (row.length >= 4) {
+                disc = row[1] ? row[1].trim() : "";
+                turma = row[2] ? row[2].trim() : "";
+                prof = row[3] ? row[3].trim() : "";
             }
+        } else {
+            if (row.length >= 3) {
+                disc = row[0] ? row[0].trim() : "";
+                turma = row[1] ? row[1].trim() : "";
+                prof = row[2] ? row[2].trim() : "";
+            }
+        }
+
+        if (disc && turma && prof) {
+            let id = "T" + index;
+            disciplinasBase.push([id, disc, turma, prof, "Não"]);
+            setProf.add(prof);
+            setDisc.add(disc);
         }
     });
 
