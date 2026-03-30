@@ -15,8 +15,10 @@ function getUniqueId() {
 
 window.onload = function() {
     // Usando corsproxy.io
-    const driveUrl = 'https://drive.google.com/uc?export=download&id=1lHFJWDuw7ZFhqCbpzsDXsu0Ogsu1DEYg';
-    const csvUrl = 'https://corsproxy.io/?' + encodeURIComponent(driveUrl);
+    // Adicionado cache-buster (t=...) para garantir que pegue o dado atualizado do Google Drive
+    const timestamp = new Date().getTime();
+    const driveUrl = `https://drive.google.com/uc?export=download&id=1lHFJWDuw7ZFhqCbpzsDXsu0Ogsu1DEYg&t=${timestamp}`;
+    const csvUrl = `https://corsproxy.io/?${encodeURIComponent(driveUrl)}`;
     
     // Fallback completo embutido (à prova de falhas offline/CORS)
     const fallbackCSV = `disciplina,turma,professor
