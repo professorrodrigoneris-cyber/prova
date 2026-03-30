@@ -7,7 +7,9 @@ let discPrioridade = {}; // "Disc": 1 (Aplicação preferida)
 let montadorLista = []; // The generated result
 
 window.onload = function() {
-    const githubUrl = 'https://professorrodrigoneris-cyber.github.io/prova/disciplinas.csv';
+    // Usando corsproxy.io por ser mais estável que allorigins
+    const driveUrl = 'https://drive.google.com/uc?export=download&id=1lHFJWDuw7ZFhqCbpzsDXsu0Ogsu1DEYg';
+    const csvUrl1 = 'https://corsproxy.io/?' + encodeURIComponent(driveUrl);
     
     // Fallback completo embutido (à prova de falhas offline/CORS) para formato antigo
     const fallbackCSV = `disciplina,turma,professor
@@ -92,14 +94,14 @@ Inglês,5º ANO A,Rodrigo
 Pensamento Computacional,5º ANO A,Rodrigo
 Educação Física,5º ANO A,Hérica`;
 
-    Papa.parse(githubUrl, {
+    Papa.parse(csvUrl1, {
         download: true,
         header: false,
         complete: function(results) {
             processarCSVDados(results.data);
         },
         error: function(err1) {
-            console.warn("Falha no download da base de dados do GitHub. Carregando dados de emergência internos...", err1);
+            console.warn("Proxies do Drive bloqueados. Carregando dados de emergência internos...", err1);
             Papa.parse(fallbackCSV, {
                 download: false,
                 header: false,
