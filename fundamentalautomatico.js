@@ -8,8 +8,10 @@ let montadorLista = []; // The generated result
 
 window.onload = function() {
     // Usando corsproxy.io por ser mais estável que allorigins
-    const driveUrl = 'https://drive.google.com/uc?export=download&id=1lHFJWDuw7ZFhqCbpzsDXsu0Ogsu1DEYg';
-    const csvUrl1 = 'https://corsproxy.io/?' + encodeURIComponent(driveUrl);
+    // Adicionado cache-buster (t=...) para evitar que o navegador ou o proxy guardem a versão antiga
+    const timestamp = new Date().getTime();
+    const driveUrl = `https://drive.google.com/uc?export=download&id=1lHFJWDuw7ZFhqCbpzsDXsu0Ogsu1DEYg&t=${timestamp}`;
+    const csvUrl1 = `https://corsproxy.io/?${encodeURIComponent(driveUrl)}`;
     
     // Fallback completo embutido (à prova de falhas offline/CORS) para formato antigo
     const fallbackCSV = `disciplina,turma,professor
